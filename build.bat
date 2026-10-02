@@ -20,7 +20,7 @@ where wails >nul 2>nul || (
 set "WORK=%TEMP%\BeamController-build"
 set "OUT=%LOCALAPPDATA%\Programs\BeamController"
 if exist "%WORK%" rmdir /s /q "%WORK%"
-robocopy "%~dp0." "%WORK%" /E /XD build .git /XF BeamController.exe go.sum _t.txt /NFL /NDL /NJH /NJS >nul
+robocopy "%~dp0." "%WORK%" /E /XD "%~dp0build\bin" .git /XF BeamController.exe /NFL /NDL /NJH /NJS >nul
 
 pushd "%WORK%"
 go mod tidy || goto fail
