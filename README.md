@@ -7,6 +7,14 @@ and takes beam headings and radio frequencies from **N1MM Logger+** during a con
 Written in Go with [Wails](https://wails.io); the window is plain HTML/CSS/JS in
 `frontend/dist`.
 
+![Horizontal layout](docs/horizontal.png)
+
+<img src="docs/vertical.png" alt="Vertical layout" width="260" align="right">
+
+The **⇆** button switches to a narrow vertical layout that sits beside N1MM's windows.
+
+<br clear="right">
+
 ## Running it
 
 The program is built to:
