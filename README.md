@@ -68,6 +68,38 @@ builds the app, and opens the folder containing the new `BeamController.exe`.
 It builds in a copy under `%TEMP%`, so it also works if the source folder is protected by
 Windows Defender **Controlled folder access** (e.g. inside Documents).
 
+## Adding your own features with Claude Code
+
+This app was written with [Claude Code](https://claude.com/claude-code), Anthropic's AI coding
+assistant, by a ham who doesn't consider himself a programmer. You can extend it the same way.
+Describe what you want in plain English, and Claude Code reads the source, makes the change,
+builds it and runs the tests.
+
+1. **Fork** this repository on GitHub (the *Fork* button, top right) so you have your own copy.
+2. **Clone** your fork to your PC, e.g. `git clone https://github.com/<your-call>/N1MM-BeamController`.
+   Keep it out of `Documents` if Windows Controlled folder access is on.
+3. **Install Claude Code** (desktop app or `npm install -g @anthropic-ai/claude-code`) and open the
+   cloned folder in it.
+4. **Ask for what you want.** For example:
+   * "Add a button that turns the beam to long path of the last N1MM heading and holds it there."
+   * "Support a second Rotator Genius for my 40 m beam, as a second compass."
+   * "Add Stream Deck control: listen for HTTP requests like /rotor/220 and /steppir/180."
+   * "My controller is a SteppIR SDA2000. Check the protocol differences and adapt steppir.go."
+   * "Make the band buttons bigger and add 60 m."
+5. Run **`build.bat`** to build and test, then try it on the air.
+6. Commit and push to your fork. If the feature would help others, open a **pull request**
+   back to this repository.
+
+Tips:
+
+* Tell Claude Code your station details: device models, IP addresses, firmware versions, and
+  SO2R or single radio. Paste lines from the app's **Log** tab when something doesn't work.
+  Most fixes in this project came from a pasted log or a captured raw device reply.
+* Ask it to test with read-only commands or fakes, and say so if it must **not** turn the
+  rotator or move SteppIR elements while testing.
+* A working example helps it a lot, e.g. a Node-RED flow or a capture from another program
+  that already talks to your device.
+
 ## Protocol notes
 
 * Rotator Genius (TCP 9006): `|h` status, `|A1<az>` turn rotor 1, `|S` stop. Reply is
@@ -75,7 +107,8 @@ Windows Defender **Controlled folder access** (e.g. inside Documents).
 * SteppIR SDA100: 11-byte `@A` packets (frequency in 10 Hz units, direction byte, command
   byte), status with `?A`. Command bytes: 0x00 set, `R`/`U` autotrack on/off, `S` home, `V` calibrate.
 * Antenna Genius (TCP 9007): 4O3A Genius API: `port set <1|2> rxant=<n>`, `sub port all`,
-  `antenna list`, `band list`.
+  `antenna list`, `band list`. Commands must end in LF. Firmware 4.1.16 ignores the CR shown
+  in 4O3A's docs. Connections from another subnet must first send `auth code=<code>`.
 * N1MM: `<N1MMRotor>` (goazi / stop) and `<RadioInfo>` (Freq in 10 Hz units, IsTransmitting).
 
 ## Planned
