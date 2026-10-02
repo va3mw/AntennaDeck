@@ -1,6 +1,6 @@
 # AntennaDeck
 
-**Station antenna control for contesting.** Current version: **1.1.0** (see [Releases](../../releases)).
+**Station antenna control for contesting.** Current version: **1.2.0** (see [Releases](../../releases)).
 
 A compact Windows app that controls a **4O3A Rotator Genius**, a **SteppIR SDA100**
 (through a TCP-to-RS232 converter) and a **4O3A Antenna Genius** from one window,
@@ -14,6 +14,18 @@ Written in Go with [Wails](https://wails.io); the window is plain HTML/CSS/JS in
 <img src="docs/vertical.png" alt="Vertical layout" width="260" align="right">
 
 The **⇆** button switches to a narrow vertical layout that sits beside N1MM's windows.
+
+The **▣** button turns on **mini** mode for small screens. It removes the compass and uses
+smaller text, and every control stays. Mini works with either layout, so there are four in all:
+
+| Layout | Opens at |
+|---|---|
+| Horizontal | 850 × 320 |
+| Vertical | 370 × 1000 |
+| Mini horizontal | 500 × 250 |
+| Mini vertical | 270 × 585 |
+
+Each layout remembers its own window size.
 
 <br clear="right">
 
@@ -29,7 +41,8 @@ Pin it to the taskbar or make a shortcut. Click **⚙** to enter the IP address 
 of each device, then **Save**. Settings and a log file are kept in
 `%APPDATA%\AntennaDeck\` (`config.json`, `antennadeck.log`).
 
-Toolbar buttons: **⇆** switches between the horizontal and vertical layout, **📌** keeps
+Toolbar buttons: **⇆** switches between the horizontal and vertical layout, **▣** turns
+mini mode on and off, **📌** keeps
 the window on top of N1MM, **⚙** opens settings and the log.
 
 ## What each panel does
@@ -161,6 +174,9 @@ Tips:
 * N1MM: `<N1MMRotor>` (goazi / stop) and `<RadioInfo>` (Freq in 10 Hz units, IsTransmitting).
 
 ## Version history
+
+* **1.2.0** (2026-10-01): mini mode for small screens (no compass, smaller text), usable with
+  either layout, so there are four layouts. Each remembers its own window size.
 
 * **1.1.0** (2026-10-01): Stream Deck / remote control over HTTP, with a page listing every
   command URL for your station. Fixed: a fresh install (no saved settings) crashed at startup.

@@ -74,11 +74,7 @@ func (a *App) beforeClose(ctx context.Context) bool {
 	w, h := runtime.WindowGetSize(ctx)
 	a.cfgMu.Lock()
 	a.cfg.Window.Saved, a.cfg.Window.X, a.cfg.Window.Y = true, x, y
-	if a.cfg.Layout == "vertical" {
-		a.cfg.Window.VW, a.cfg.Window.VH = w, h
-	} else {
-		a.cfg.Window.HW, a.cfg.Window.HH = w, h
-	}
+	a.cfg.rememberSize(w, h)
 	c := a.cfg
 	a.cfgMu.Unlock()
 	_ = saveConfig(c)
@@ -272,6 +268,7 @@ func (a *App) SaveConfig(c Config) string {
 	old := a.config()
 	c.Window = old.Window
 	c.Layout = old.Layout
+	c.Mini = old.Mini
 	a.mutateConfig(func(dst *Config) { *dst = c })
 	a.logf("Settings saved")
 	a.rotor.link.restart()
@@ -286,18 +283,24 @@ func (a *App) SaveConfig(c Config) string {
 	return ""
 }
 
-func (a *App) SetLayout(layout string) {
+// switchLayout remembers the current window size, applies the change and
+// resizes the window to what the new layout last used.
+func (a *App) switchLayout(change func(*Config)) {
 	w, h := runtime.WindowGetSize(a.ctx)
 	a.mutateConfig(func(c *Config) {
-		if c.Layout == "vertical" {
-			c.Window.VW, c.Window.VH = w, h
-		} else {
-			c.Window.HW, c.Window.HH = w, h
-		}
-		c.Layout = layout
+		c.rememberSize(w, h)
+		change(c)
 	})
 	nw, nh := a.config().windowSize()
 	runtime.WindowSetSize(a.ctx, nw, nh)
+}
+
+func (a *App) SetLayout(layout string) {
+	a.switchLayout(func(c *Config) { c.Layout = layout })
+}
+
+func (a *App) SetMini(on bool) {
+	a.switchLayout(func(c *Config) { c.Mini = on })
 }
 
 func (a *App) SetAlwaysOnTop(on bool) {

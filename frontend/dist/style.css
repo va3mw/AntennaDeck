@@ -186,3 +186,46 @@ fieldset .sub { grid-column: 1 / -1; color: var(--text); margin-top: 4px; }
 }
 .toast.info { background: #173a2a; border-color: var(--green); color: #d6ffe9; }
 .tabs .ver { color: var(--muted); font-size: 11px; align-self: center; margin-right: 6px; }
+
+/* ---------- mini: compact version of either layout (target 500 x 250) ---------- */
+body.mini { font-size: 10.5px; }
+body.mini button, body.mini select, body.mini input { padding: 2px 4px; border-radius: 4px; }
+body.mini #toolbar { padding: 1px 4px; gap: 4px; }
+body.mini .radio { padding: 0 6px; font-size: 10px; }
+body.mini .tools button { padding: 0 5px; font-size: 11px; }
+body.mini #panels { gap: 4px; padding: 4px; }
+body.mini #panels.horizontal { grid-template-columns: 1fr 1fr 1.15fr; justify-content: stretch; }
+body.mini .panel { padding: 4px; gap: 3px; border-radius: 6px; }
+body.mini .panel header { min-height: 14px; gap: 4px; }
+body.mini .panel .title { font-size: 9.5px; letter-spacing: .04em; }
+body.mini .status b, body.mini .rname { display: none; }
+body.mini .status i { width: 7px; height: 7px; }
+body.mini .badge { font-size: 8.5px; padding: 0 4px; }
+
+body.mini .agports { gap: 3px; font-size: 9.5px; }
+body.mini .agports span { padding: 0 4px; border-radius: 3px; }
+body.mini .aglist { gap: 2px; }
+body.mini .agrow { grid-template-columns: 18px 1fr 18px; gap: 2px; }
+body.mini .agrow .ab { padding: 1px 0; }
+body.mini .agname { padding: 1px 3px; border-radius: 4px; }
+
+body.mini #compass { display: none; }
+body.mini .rotorbody, body.mini #panels.vertical .rotorbody { grid-template-columns: 1fr 34px; gap: 4px; }
+body.mini .rotorctl { gap: 3px; }
+body.mini .heading { font-size: 20px; min-height: 26px; max-height: 34px; border-radius: 5px; }
+body.mini .target { font-size: 9px; min-height: 11px; }
+body.mini .goto { gap: 3px; }
+body.mini .stop { padding: 2px; letter-spacing: .06em; }
+body.mini .splp { gap: 3px; }
+body.mini .splp button { padding: 1px; }
+body.mini .splp small { font-size: 8px; }
+body.mini .presets { gap: 2px; }
+body.mini .presets button { padding: 1px 0; font-size: 9.5px; }
+
+body.mini .freq { font-size: 9.5px; }
+body.mini .row { gap: 3px; }
+body.mini .row.three button { padding: 2px 1px; font-size: 9.5px; }
+body.mini .label { display: none; }
+body.mini .bands { gap: 2px; }
+body.mini .bands button { padding: 2px 0; font-size: 9.5px; }
+body.mini .stinfo { font-size: 9px; min-height: 11px; }

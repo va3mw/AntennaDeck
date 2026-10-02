@@ -60,18 +60,21 @@ type N1MMConfig struct {
 }
 
 type WindowConfig struct {
-	Saved bool `json:"saved"`
-	X     int  `json:"x"`
-	Y     int  `json:"y"`
-	HW    int  `json:"hw"`
-	HH    int  `json:"hh"`
-	VW    int  `json:"vw"`
-	VH    int  `json:"vh"`
+	Saved bool              `json:"saved"`
+	X     int               `json:"x"`
+	Y     int               `json:"y"`
+	Sizes map[string][2]int `json:"sizes"` // window size per layout key, see layoutKey
+	// sizes saved by v1.0 (horizontal / vertical only)
+	HW int `json:"hw,omitempty"`
+	HH int `json:"hh,omitempty"`
+	VW int `json:"vw,omitempty"`
+	VH int `json:"vh,omitempty"`
 }
 
 type Config struct {
 	UIVersion   int           `json:"uiVersion"` // bumped when panel sizes change, resets saved window sizes
 	Layout      string        `json:"layout"`    // "horizontal" or "vertical"
+	Mini        bool          `json:"mini"`      // compact version of either layout (no compass, small text)
 	AlwaysOnTop bool          `json:"alwaysOnTop"`
 	Window      WindowConfig  `json:"window"`
 	Rotor       RotorConfig   `json:"rotor"`
@@ -181,18 +184,47 @@ func (c *Config) normalize() {
 	}
 }
 
+// The four layouts and the window size each opens at until the user resizes it.
+var defaultSizes = map[string][2]int{
+	"horizontal":      {850, 320},
+	"vertical":        {370, 1000},
+	"mini-horizontal": {500, 250},
+	"mini-vertical":   {270, 585},
+}
+
+// layoutKey names the current layout: horizontal, vertical, mini-horizontal or mini-vertical.
+func (c Config) layoutKey() string {
+	if c.Mini {
+		return "mini-" + c.Layout
+	}
+	return c.Layout
+}
+
 // windowSize returns the window size to use for the current layout.
 func (c Config) windowSize() (int, int) {
-	if c.Layout == "vertical" {
-		if c.Window.VW > 0 && c.Window.VH > 0 {
-			return c.Window.VW, c.Window.VH
-		}
-		return 370, 1000
+	key := c.layoutKey()
+	if s, ok := c.Window.Sizes[key]; ok && s[0] > 0 && s[1] > 0 {
+		return s[0], s[1]
 	}
-	if c.Window.HW > 0 && c.Window.HH > 0 {
+	switch {
+	case key == "horizontal" && c.Window.HW > 0 && c.Window.HH > 0:
 		return c.Window.HW, c.Window.HH
+	case key == "vertical" && c.Window.VW > 0 && c.Window.VH > 0:
+		return c.Window.VW, c.Window.VH
 	}
-	return 850, 320
+	s := defaultSizes[key]
+	return s[0], s[1]
+}
+
+// rememberSize stores the window size for the current layout.
+func (c *Config) rememberSize(w, h int) {
+	if w <= 0 || h <= 0 {
+		return
+	}
+	if c.Window.Sizes == nil {
+		c.Window.Sizes = map[string][2]int{}
+	}
+	c.Window.Sizes[c.layoutKey()] = [2]int{w, h}
 }
 
 // bandFor returns the enabled SteppIR band containing mhz, or "".
@@ -227,6 +259,7 @@ func loadConfig() Config {
 	if c.UIVersion < uiVersion {
 		c.UIVersion = uiVersion
 		c.Window.HW, c.Window.HH, c.Window.VW, c.Window.VH = 0, 0, 0, 0
+		c.Window.Sizes = nil
 	}
 	c.normalize()
 	return c

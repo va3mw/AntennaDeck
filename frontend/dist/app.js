@@ -117,6 +117,8 @@ function applyConfig() {
   p.className = cfg.layout === 'vertical' ? 'vertical' : 'horizontal';
   document.body.style.overflow = cfg.layout === 'vertical' ? 'auto' : 'hidden';
   $('btnTop').classList.toggle('on', !!cfg.alwaysOnTop);
+  document.body.classList.toggle('mini', !!cfg.mini);
+  $('btnMini').classList.toggle('on', !!cfg.mini);
 
   svgParts.beam.setAttribute('d', wedge(cfg.rotor.beamWidth || 60));
 
@@ -371,6 +373,7 @@ function addLog(line) {
 function wire() {
   $('btnLayout').onclick = () => call('SetLayout', cfg.layout === 'vertical' ? 'horizontal' : 'vertical');
   $('btnTop').onclick = () => call('SetAlwaysOnTop', !cfg.alwaysOnTop);
+  $('btnMini').onclick = () => call('SetMini', !cfg.mini);
   $('btnSettings').onclick = openSettings;
   $('setCancel').onclick = () => $('settings').classList.add('hidden');
   $('setSave').onclick = saveSettings;
