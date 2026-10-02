@@ -58,13 +58,15 @@ the active (TX) radio, or *Radio with SteppIR on AG*, which follows whichever AG
 currently has the SteppIR antenna selected. That last option suits SO2R; set
 *SteppIR antenna on AG* to the right AG antenna.
 
-## Building after a change
+## Building
+
+You need [Go](https://go.dev/dl/) 1.22 or newer and the WebView2 runtime (built into Windows 11).
 
 Double-click **`build.bat`**. It installs the Wails build tool the first time, runs the tests,
 builds the app, and opens the folder containing the new `BeamController.exe`.
 
-It builds in `%TEMP%` because Windows Defender **Controlled folder access** protects
-`F:\Documents` and blocks compilers from writing there.
+It builds in a copy under `%TEMP%`, so it also works if the source folder is protected by
+Windows Defender **Controlled folder access** (e.g. inside Documents).
 
 ## Protocol notes
 
