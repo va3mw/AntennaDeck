@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beam Controller</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="toolbar">
+  <div class="radios">
+    <span id="r1" class="radio">R1 —</span>
+    <span id="r2" class="radio">R2 —</span>
+  </div>
+  <div class="tools">
+    <button id="btnLayout" title="Switch between horizontal and vertical layout">⇆</button>
+    <button id="btnTop" title="Keep this window on top of N1MM">📌</button>
+    <button id="btnSettings" title="Settings and log">⚙</button>
+  </div>
+</div>
+
+<main id="panels">
+  <!-- Antenna Genius -->
+  <section class="panel" id="agPanel">
+    <header>
+      <span class="title">ANTENNA GENIUS</span>
+      <span class="status" id="agStatus"><i></i><b>OFFLINE</b></span>
+    </header>
+    <div class="agports">
+      <span class="pa">A <b id="agBandA">—</b></span>
+      <span class="pb">B <b id="agBandB">—</b></span>
+    </div>
+    <div id="agList" class="aglist"></div>
+  </section>
+
+  <!-- Rotator -->
+  <section class="panel" id="rotorPanel">
+    <header>
+      <span class="title">ROTOR</span>
+      <span class="status" id="rotorStatus"><i></i></span>
+      <span class="rname" id="rotorName"></span>
+      <span class="badge" id="rotorMove">STOP</span>
+    </header>
+    <div class="rotorbody">
+      <svg id="compass" viewBox="0 0 240 240" aria-label="Click to turn the beam"></svg>
+      <div class="rotorctl">
+        <div class="heading" id="heading">—</div>
+        <div class="target" id="target">&nbsp;</div>
+        <div class="goto">
+          <input id="azInput" type="number" min="0" max="359" placeholder="0 - 359">
+          <button id="btnGo">GO</button>
+        </div>
+        <button id="btnStop" class="stop">STOP</button>
+        <div class="splp">
+          <button id="btnSP" title="Short path from N1MM"><small>SP</small><b id="spVal">—</b></button>
+          <button id="btnLP" title="Long path from N1MM"><small>LP</small><b id="lpVal">—</b></button>
+        </div>
+      </div>
+      <div class="presets" id="presets"></div>
+    </div>
+  </section>
+
+  <!-- SteppIR -->
+  <section class="panel" id="stPanel">
+    <header>
+      <span class="title">SteppIR</span>
+      <span class="freq" id="stFreq">—</span>
+      <span class="status" id="stStatus"><i></i></span>
+    </header>
+    <div class="row dirs" id="stDirs">
+      <button data-dir="normal">N</button>
+      <button data-dir="180">180°</button>
+      <button data-dir="bi">Bi</button>
+      <button data-dir="34" id="dir34">¾λ</button>
+    </div>
+    <div class="label">BANDS</div>
+    <div class="bands" id="stBands"></div>
+    <div class="row">
+      <button id="stDown">⌄ 25</button>
+      <button id="stUp">⌃ 25</button>
+    </div>
+    <div class="row">
+      <button id="stTrack" class="track" title="Follow the N1MM radio frequency">Tracking off</button>
+      <select id="stThresh" title="Retune when the radio moves this far"></select>
+    </div>
+    <div class="row three">
+      <button id="stRetract" class="warn" title="Retract all elements (home)">⤓ Retract</button>
+      <button id="stCal" title="Calibrate elements">◎ Calibrate</button>
+      <button id="stAuto" title="SDA100 controller autotrack on/off">Autotrack</button>
+    </div>
+    <div class="stinfo" id="stInfo">&nbsp;</div>
+  </section>
+</main>
+
+<!-- Settings -->
+<div id="settings" class="modal hidden">
+  <div class="dialog">
+    <div class="tabs">
+      <button data-tab="setup" class="on">Setup</button>
+      <button data-tab="log">Log</button>
+      <span class="spacer"></span>
+      <button id="setCancel">Close</button>
+      <button id="setSave" class="primary">Save</button>
+    </div>
+
+    <div class="tab" id="tab-setup">
+      <fieldset>
+        <legend>Rotator Genius</legend>
+        <label><input type="checkbox" data-path="rotor.enabled"> Enabled</label>
+        <label>IP address <input data-path="rotor.host" placeholder="192.168.1.250"></label>
+        <label>Port <input type="number" data-path="rotor.port"></label>
+        <label>Rotor <select data-path="rotor.number" data-type="int"><option value="1">1</option><option value="2">2</option></select></label>
+        <label>Poll (ms) <input type="number" data-path="rotor.pollMs"></label>
+        <label>Beam width (°) <input type="number" data-path="rotor.beamWidth"></label>
+        <div class="sub">Preset buttons (label and heading)</div>
+        <div id="presetRows" class="grid4"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>SteppIR (SDA100 via TCP/RS232 converter)</legend>
+        <label><input type="checkbox" data-path="steppir.enabled"> Enabled</label>
+        <label>IP address <input data-path="steppir.host" placeholder="converter IP"></label>
+        <label>Port <input type="number" data-path="steppir.port"></label>
+        <label>Poll (ms) <input type="number" data-path="steppir.pollMs"></label>
+        <label>Step (kHz) <input type="number" data-path="steppir.stepKHz"></label>
+        <label>Follow radio
+          <select data-path="steppir.followRadio">
+            <option value="1">Radio 1</option>
+            <option value="2">Radio 2</option>
+            <option value="active">Active (TX) radio</option>
+            <option value="ag">Radio with SteppIR on AG</option>
+          </select>
+        </label>
+        <label>SteppIR antenna on AG <select data-path="steppir.agAntenna" data-type="int" id="agAntSelect"></select></label>
+        <label><input type="checkbox" data-path="steppir.showThreeQuarter"> Show ¾ wave button (verticals)</label>
+        <div class="sub">Bands (button frequency and band edges in MHz)</div>
+        <div id="bandRows" class="bandgrid"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Antenna Genius</legend>
+        <label><input type="checkbox" data-path="ag.enabled"> Enabled</label>
+        <label>IP address <input data-path="ag.host" placeholder="192.168.1.x"></label>
+        <label>Port <input type="number" data-path="ag.port"></label>
+        <label>Remote access code <input type="password" data-path="ag.authCode" placeholder="only if on another subnet" autocomplete="off"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>N1MM Logger+</legend>
+        <label><input type="checkbox" data-path="n1mm.rotorEnabled"> Accept rotor commands</label>
+        <label>Rotor UDP port <input type="number" data-path="n1mm.rotorPort"></label>
+        <label>Rotor name filter <input data-path="n1mm.rotorName" placeholder="blank = any"></label>
+        <label><input type="checkbox" data-path="n1mm.radioEnabled"> Receive radio info</label>
+        <label>Radio info UDP port <input type="number" data-path="n1mm.radioPort"></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Window</legend>
+        <label><input type="checkbox" data-path="alwaysOnTop"> Always on top</label>
+      </fieldset>
+    </div>
+
+    <div class="tab hidden" id="tab-log">
+      <pre id="logView"></pre>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+<script src="app.js"></script>
+</body>
+</html>

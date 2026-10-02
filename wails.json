@@ -1,0 +1,19 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "BeamController",
+  "outputfilename": "BeamController",
+  "frontend:install": "",
+  "frontend:build": "",
+  "frontend:dev:watcher": "",
+  "frontend:dev:serverUrl": "",
+  "author": {
+    "name": "VA3MW"
+  },
+  "info": {
+    "companyName": "VA3MW",
+    "productName": "Beam Controller",
+    "productVersion": "1.0.0",
+    "copyright": "",
+    "comments": "Rotator Genius, SteppIR SDA100 and Antenna Genius controller for N1MM"
+  }
+}
