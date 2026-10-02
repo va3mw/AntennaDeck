@@ -58,7 +58,7 @@ func (a *App) startup(ctx context.Context) {
 	if c := a.config(); c.Window.Saved {
 		runtime.WindowSetPosition(ctx, c.Window.X, c.Window.Y)
 	}
-	a.logf("Beam Controller started. Settings file: %s", configPath())
+	a.logf("AntennaDeck v%s started. Settings file: %s", Version, configPath())
 	go a.rotor.link.run(a.ctx)
 	go a.steppir.link.run(a.ctx)
 	go a.ag.link.run(a.ctx)
@@ -91,7 +91,7 @@ func (a *App) shutdown(ctx context.Context) {
 // openLogFile keeps a copy of the log next to the settings file;
 // it is started fresh when it grows past 1 MB.
 func (a *App) openLogFile() {
-	p := filepath.Join(filepath.Dir(configPath()), "beamcontroller.log")
+	p := filepath.Join(filepath.Dir(configPath()), "antennadeck.log")
 	_ = os.MkdirAll(filepath.Dir(p), 0o755)
 	if fi, err := os.Stat(p); err == nil && fi.Size() > 1<<20 {
 		_ = os.Remove(p)
@@ -228,6 +228,8 @@ func errStr(err error) string {
 func (a *App) GetConfig() Config { return a.config() }
 
 func (a *App) UIReady() { a.logf("User interface ready") }
+
+func (a *App) GetVersion() string { return Version }
 
 func (a *App) GetState() State {
 	return State{

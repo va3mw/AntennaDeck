@@ -1,8 +1,8 @@
 @echo off
-rem One-click build for Beam Controller.
+rem One-click build for AntennaDeck.
 rem Builds in a temporary folder (Windows "Controlled folder access" blocks
 rem compilers from writing inside Documents) and puts the finished program in
-rem %LOCALAPPDATA%\Programs\BeamController.
+rem %LOCALAPPDATA%\Programs\AntennaDeck.
 setlocal
 cd /d "%~dp0"
 set "PATH=%PATH%;%USERPROFILE%\go\bin"
@@ -17,10 +17,10 @@ where wails >nul 2>nul || (
   go install github.com/wailsapp/wails/v2/cmd/wails@latest || goto fail
 )
 
-set "WORK=%TEMP%\BeamController-build"
-set "OUT=%LOCALAPPDATA%\Programs\BeamController"
+set "WORK=%TEMP%\AntennaDeck-build"
+set "OUT=%LOCALAPPDATA%\Programs\AntennaDeck"
 if exist "%WORK%" rmdir /s /q "%WORK%"
-robocopy "%~dp0." "%WORK%" /E /XD "%~dp0build\bin" .git /XF BeamController.exe /NFL /NDL /NJH /NJS >nul
+robocopy "%~dp0." "%WORK%" /E /XD "%~dp0build\bin" .git /XF AntennaDeck.exe /NFL /NDL /NJH /NJS >nul
 
 pushd "%WORK%"
 go mod tidy || goto fail
@@ -29,15 +29,15 @@ wails build -clean -trimpath || goto fail
 popd
 
 :waitclose
-tasklist /fi "imagename eq BeamController.exe" | find /i "BeamController.exe" >nul && (
-  echo Beam Controller is running. Close it, then press a key to install the new version.
+tasklist /fi "imagename eq AntennaDeck.exe" | find /i "AntennaDeck.exe" >nul && (
+  echo AntennaDeck is running. Close it, then press a key to install the new version.
   pause >nul
   goto waitclose
 )
 if not exist "%OUT%" mkdir "%OUT%"
-copy /y "%WORK%\build\bin\BeamController.exe" "%OUT%\" >nul || goto fail
+copy /y "%WORK%\build\bin\AntennaDeck.exe" "%OUT%\" >nul || goto fail
 echo.
-echo Done: %OUT%\BeamController.exe
+echo Done: %OUT%\AntennaDeck.exe
 explorer "%OUT%"
 pause
 exit /b 0

@@ -424,6 +424,7 @@ function boot() {
     window.runtime.EventsOn('config', (c2) => { cfg = c2; applyConfig(); render(); });
     window.runtime.EventsOn('log', addLog);
     api.UIReady();
+    api.GetVersion().then((v) => { $('verLabel').textContent = 'AntennaDeck v' + v; });
   });
 }
 

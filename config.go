@@ -196,12 +196,18 @@ func configPath() string {
 	if err != nil {
 		dir = "."
 	}
-	return filepath.Join(dir, "BeamController", "config.json")
+	return filepath.Join(dir, "AntennaDeck", "config.json")
 }
 
 func loadConfig() Config {
 	c := defaultConfig()
-	if b, err := os.ReadFile(configPath()); err == nil {
+	b, err := os.ReadFile(configPath())
+	if err != nil {
+		// first run after the rename from "BeamController": keep the old settings
+		old := filepath.Join(filepath.Dir(filepath.Dir(configPath())), "BeamController", "config.json")
+		b, err = os.ReadFile(old)
+	}
+	if err == nil {
 		_ = json.Unmarshal(b, &c)
 	}
 	if c.UIVersion < uiVersion {

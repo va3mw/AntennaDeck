@@ -19,7 +19,7 @@ func main() {
 	w, h := cfg.windowSize()
 
 	err := wails.Run(&options.App{
-		Title:            "Beam Controller",
+		Title:            "AntennaDeck v" + Version,
 		Width:            w,
 		Height:           h,
 		MinWidth:         300,

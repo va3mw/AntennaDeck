@@ -1,4 +1,4 @@
-module beamcontroller
+module antennadeck
 
 go 1.25.0
 

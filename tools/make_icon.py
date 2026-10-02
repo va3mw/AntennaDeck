@@ -1,4 +1,4 @@
-"""Draw the Beam Controller icon: dark compass, green beam wedge, orange north marker."""
+"""Draw the AntennaDeck icon: dark compass, green beam wedge, orange north marker."""
 import math
 import os
 import sys

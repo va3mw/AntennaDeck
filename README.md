@@ -1,4 +1,6 @@
-# Beam Controller
+# AntennaDeck
+
+**Station antenna control for contesting.** Current version: **1.0.0** (see [Releases](../../releases)).
 
 A compact Windows app that controls a **4O3A Rotator Genius**, a **SteppIR SDA100**
 (through a TCP-to-RS232 converter) and a **4O3A Antenna Genius** from one window,
@@ -20,12 +22,12 @@ The **⇆** button switches to a narrow vertical layout that sits beside N1MM's 
 The program is built to:
 
 ```
-%LOCALAPPDATA%\Programs\BeamController\BeamController.exe
+%LOCALAPPDATA%\Programs\AntennaDeck\AntennaDeck.exe
 ```
 
 Pin it to the taskbar or make a shortcut. Click **⚙** to enter the IP address and port
 of each device, then **Save**. Settings and a log file are kept in
-`%APPDATA%\BeamController\` (`config.json`, `beamcontroller.log`).
+`%APPDATA%\AntennaDeck\` (`config.json`, `antennadeck.log`).
 
 Toolbar buttons: **⇆** switches between the horizontal and vertical layout, **📌** keeps
 the window on top of N1MM, **⚙** opens settings and the log.
@@ -58,7 +60,7 @@ In N1MM: **Config ▸ Configure Ports, Mode Control… ▸ Broadcast Data**
 * send rotor commands to `127.0.0.1:12040`
 
 If those ports are already used by something else (e.g. the old Node-RED flow listened on
-12041), change the ports in Beam Controller's settings to match. The Log tab shows an error if a port
+12041), change the ports in AntennaDeck's settings to match. The Log tab shows an error if a port
 is already in use.
 
 **Follow radio** (SteppIR settings) picks which N1MM radio the SteppIR tracks: radio 1, radio 2,
@@ -71,7 +73,7 @@ currently has the SteppIR antenna selected. That last option suits SO2R; set
 You need [Go](https://go.dev/dl/) 1.22 or newer and the WebView2 runtime (built into Windows 11).
 
 Double-click **`build.bat`**. It installs the Wails build tool the first time, runs the tests,
-builds the app, and opens the folder containing the new `BeamController.exe`.
+builds the app, and opens the folder containing the new `AntennaDeck.exe`.
 
 It builds in a copy under `%TEMP%`, so it also works if the source folder is protected by
 Windows Defender **Controlled folder access** (e.g. inside Documents).
@@ -84,7 +86,7 @@ Describe what you want in plain English, and Claude Code reads the source, makes
 builds it and runs the tests.
 
 1. **Fork** this repository on GitHub (the *Fork* button, top right) so you have your own copy.
-2. **Clone** your fork to your PC, e.g. `git clone https://github.com/<your-call>/N1MM-BeamController`.
+2. **Clone** your fork to your PC, e.g. `git clone https://github.com/<your-call>/AntennaDeck`.
    Keep it out of `Documents` if Windows Controlled folder access is on.
 3. **Install Claude Code** (desktop app or `npm install -g @anthropic-ai/claude-code`) and open the
    cloned folder in it.
@@ -118,6 +120,12 @@ Tips:
   `antenna list`, `band list`. Commands must end in LF. Firmware 4.1.16 ignores the CR shown
   in 4O3A's docs. Connections from another subnet must first send `auth code=<code>`.
 * N1MM: `<N1MMRotor>` (goazi / stop) and `<RadioInfo>` (Freq in 10 Hz units, IsTransmitting).
+
+## Version history
+
+* **1.0.0** (2026-10-01): first release. Rotator Genius, SteppIR SDA100 and Antenna Genius
+  (SO2R) control, plus N1MM rotor commands and frequency tracking. Formerly called "Beam Controller";
+  settings are carried over automatically.
 
 ## Planned
 
