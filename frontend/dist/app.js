@@ -308,6 +308,11 @@ function openSettings() {
   });
   $('bandRows').innerHTML = html;
 
+  api.GetAPIURLs().then((urls) => {
+    const k = cfg.api.key ? '?key=' + encodeURIComponent(cfg.api.key) : '';
+    $('apiExample').textContent = (urls && urls[0] ? urls[0] : '') + 'api/rotor/220' + k;
+  });
+
   showTab('setup');
   $('settings').classList.remove('hidden');
 }
@@ -369,6 +374,7 @@ function wire() {
   $('btnSettings').onclick = openSettings;
   $('setCancel').onclick = () => $('settings').classList.add('hidden');
   $('setSave').onclick = saveSettings;
+  $('apiPage').onclick = () => call('OpenAPIPage');
   document.querySelectorAll('.tabs [data-tab]').forEach((b) => (b.onclick = () => showTab(b.dataset.tab)));
 
   const go = () => {

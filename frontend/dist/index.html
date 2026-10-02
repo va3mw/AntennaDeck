@@ -156,6 +156,15 @@
       </fieldset>
 
       <fieldset>
+        <legend>Stream Deck / remote control</legend>
+        <label><input type="checkbox" data-path="api.enabled"> Enable web commands</label>
+        <label>TCP port <input type="number" data-path="api.port"></label>
+        <label>Key (optional) <input data-path="api.key" placeholder="blank = no key" autocomplete="off"></label>
+        <div class="sub">Buttons call URLs like <code id="apiExample">http://&lt;this PC&gt;:8090/api/rotor/220</code>
+          <button id="apiPage" type="button">Show all command URLs</button></div>
+      </fieldset>
+
+      <fieldset>
         <legend>Window</legend>
         <label><input type="checkbox" data-path="alwaysOnTop"> Always on top</label>
       </fieldset>

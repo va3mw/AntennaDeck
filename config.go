@@ -78,6 +78,14 @@ type Config struct {
 	Steppir     SteppirConfig `json:"steppir"`
 	AG          AGConfig      `json:"ag"`
 	N1MM        N1MMConfig    `json:"n1mm"`
+	API         APIConfig     `json:"api"`
+}
+
+// APIConfig is the HTTP interface used by Stream Deck buttons and other remote tools.
+type APIConfig struct {
+	Enabled bool   `json:"enabled"`
+	Port    int    `json:"port"`
+	Key     string `json:"key"` // optional; when set, requests must carry ?key=<key>
 }
 
 const uiVersion = 2
@@ -99,7 +107,8 @@ func defaultConfig() Config {
 	return Config{
 		Layout: "horizontal",
 		Rotor: RotorConfig{
-			Enabled: true, Host: "192.168.1.250", Port: 9006, // 4O3A factory default Number: 1, PollMs: 500, BeamWidth: 60,
+			Enabled: true, Host: "192.168.1.250", Port: 9006, // 4O3A factory default address
+			Number: 1, PollMs: 500, BeamWidth: 60,
 			Presets: []Preset{{"EU", 50}, {"SA", 160}, {"US", 220}, {"VK", 300}, {"JA", 330}, {"AS", 355}},
 		},
 		Steppir: SteppirConfig{
@@ -108,6 +117,7 @@ func defaultConfig() Config {
 		},
 		AG:   AGConfig{Enabled: true, Port: 9007},
 		N1MM: N1MMConfig{RotorEnabled: true, RotorPort: 12040, RadioEnabled: true, RadioPort: 12060},
+		API:  APIConfig{Port: 8090},
 	}
 }
 
@@ -121,6 +131,10 @@ func (c *Config) normalize() {
 	c.AG.Host = strings.TrimSpace(c.AG.Host)
 	c.AG.AuthCode = strings.TrimSpace(c.AG.AuthCode)
 	c.N1MM.RotorName = strings.TrimSpace(c.N1MM.RotorName)
+	c.API.Key = strings.TrimSpace(c.API.Key)
+	if c.API.Port <= 0 || c.API.Port > 65535 {
+		c.API.Port = d.API.Port
+	}
 	if c.Rotor.Port <= 0 {
 		c.Rotor.Port = d.Rotor.Port
 	}

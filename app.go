@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sync"
@@ -41,6 +42,7 @@ type App struct {
 	steppir *Steppir
 	ag      *AntennaGenius
 	n1mm    *N1MM
+	api     *apiServer
 }
 
 func NewApp() *App {
@@ -49,6 +51,7 @@ func NewApp() *App {
 	a.steppir = newSteppir(a)
 	a.ag = newAntennaGenius(a)
 	a.n1mm = newN1MM(a)
+	a.api = newAPIServer(a)
 	return a
 }
 
@@ -63,6 +66,7 @@ func (a *App) startup(ctx context.Context) {
 	go a.steppir.link.run(a.ctx)
 	go a.ag.link.run(a.ctx)
 	a.n1mm.start(a.ctx)
+	a.api.start()
 }
 
 func (a *App) beforeClose(ctx context.Context) bool {
@@ -85,6 +89,7 @@ func (a *App) shutdown(ctx context.Context) {
 	if a.cancel != nil {
 		a.cancel()
 	}
+	a.api.stop()
 	a.n1mm.stop()
 }
 
@@ -231,6 +236,23 @@ func (a *App) UIReady() { a.logf("User interface ready") }
 
 func (a *App) GetVersion() string { return Version }
 
+// GetAPIURLs returns the addresses Stream Deck buttons should use.
+func (a *App) GetAPIURLs() []string { return apiURLs(a.config().API.Port) }
+
+// OpenAPIPage shows the list of Stream Deck command URLs in the browser.
+func (a *App) OpenAPIPage() string {
+	c := a.config().API
+	if !c.Enabled {
+		return "Turn on the Stream Deck API and Save first"
+	}
+	u := fmt.Sprintf("http://127.0.0.1:%d/", c.Port)
+	if c.Key != "" {
+		u += "?key=" + url.QueryEscape(c.Key)
+	}
+	runtime.BrowserOpenURL(a.ctx, u)
+	return ""
+}
+
 func (a *App) GetState() State {
 	return State{
 		Rotor:   a.rotor.snapshot(),
@@ -257,6 +279,8 @@ func (a *App) SaveConfig(c Config) string {
 	a.ag.link.restart()
 	a.n1mm.stop()
 	a.n1mm.start(a.ctx)
+	a.api.stop()
+	a.api.start()
 	runtime.WindowSetAlwaysOnTop(a.ctx, a.config().AlwaysOnTop)
 	a.changed()
 	return ""

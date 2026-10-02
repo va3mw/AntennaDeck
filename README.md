@@ -1,6 +1,6 @@
 # AntennaDeck
 
-**Station antenna control for contesting.** Current version: **1.0.0** (see [Releases](../../releases)).
+**Station antenna control for contesting.** Current version: **1.1.0** (see [Releases](../../releases)).
 
 A compact Windows app that controls a **4O3A Rotator Genius**, a **SteppIR SDA100**
 (through a TCP-to-RS232 converter) and a **4O3A Antenna Genius** from one window,
@@ -68,6 +68,45 @@ the active (TX) radio, or *Radio with SteppIR on AG*, which follows whichever AG
 currently has the SteppIR antenna selected. That last option suits SO2R; set
 *SteppIR antenna on AG* to the right AG antenna.
 
+Also add `127.0.0.1:12060` to the **Radio** line if N1MM already sends radio data elsewhere.
+Addresses on one line are separated by a space, and N1MM sends to all of them.
+
+## Stream Deck and remote control
+
+AntennaDeck can take commands as simple web addresses (HTTP GET), so a Stream Deck button,
+a browser bookmark or a script can turn the beam, change SteppIR band or switch antennas.
+This works from another PC on the LAN or over the VPN you use for remote operating.
+
+1. In AntennaDeck: **⚙ ▸ Stream Deck / remote control ▸ Enable web commands**, then **Save**.
+   The default port is 8090. The first time, Windows asks to allow AntennaDeck through the firewall.
+   Allow it on **private** networks.
+2. Click **Show all command URLs**. A page opens listing every command for *your* station,
+   including your presets, bands and AG antenna names. Copy URLs from there.
+3. On the PC with the Stream Deck, install a plugin from the Elgato Marketplace that sends an
+   **HTTP GET / web request** (search "API" or "web request"). Paste one URL per button.
+
+Example commands (replace `shack-pc` with the shack PC's IP address):
+
+| URL | Does |
+|---|---|
+| `http://shack-pc:8090/api/rotor/220` | Turn to 220° |
+| `http://shack-pc:8090/api/rotor/preset/EU` | Turn to the EU preset |
+| `http://shack-pc:8090/api/rotor/cw/10` · `/ccw/10` | Nudge 10° |
+| `http://shack-pc:8090/api/rotor/sp` · `/lp` | Short / long path to the last N1MM heading |
+| `http://shack-pc:8090/api/rotor/stop` | Stop |
+| `http://shack-pc:8090/api/steppir/band/20m` | SteppIR to 20 m |
+| `http://shack-pc:8090/api/steppir/dir/180` | SteppIR 180° (`normal`, `180`, `bi`) |
+| `http://shack-pc:8090/api/steppir/up` · `/down` | Step frequency |
+| `http://shack-pc:8090/api/steppir/tracking/toggle` | N1MM tracking on/off |
+| `http://shack-pc:8090/api/steppir/retract` | Retract elements (no confirmation!) |
+| `http://shack-pc:8090/api/ag/A/3` | Antenna Genius: radio A to antenna 3 |
+| `http://shack-pc:8090/api/ag/B/name/40M V` | Radio B to the antenna named "40M V" |
+| `http://shack-pc:8090/api/status` | Everything's current state as JSON |
+
+Each command answers `{"ok":true}`, or `{"ok":false,"error":"..."}`, and appears in the Log tab.
+Set a **Key** in settings to require `?key=<key>` on every URL, e.g. if the shack network is
+shared. Don't forward this port to the internet. Use your VPN.
+
 ## Building
 
 You need [Go](https://go.dev/dl/) 1.22 or newer and the WebView2 runtime (built into Windows 11).
@@ -93,7 +132,7 @@ builds it and runs the tests.
 4. **Ask for what you want.** For example:
    * "Add a button that turns the beam to long path of the last N1MM heading and holds it there."
    * "Support a second Rotator Genius for my 40 m beam, as a second compass."
-   * "Add Stream Deck control: listen for HTTP requests like /rotor/220 and /steppir/180."
+   * "Add a Stream Deck command that turns the beam and selects the matching AG antenna in one press."
    * "My controller is a SteppIR SDA2000. Check the protocol differences and adapt steppir.go."
    * "Make the band buttons bigger and add 60 m."
 5. Run **`build.bat`** to build and test, then try it on the air.
@@ -123,10 +162,12 @@ Tips:
 
 ## Version history
 
+* **1.1.0** (2026-10-01): Stream Deck / remote control over HTTP, with a page listing every
+  command URL for your station. Fixed: a fresh install (no saved settings) crashed at startup.
 * **1.0.0** (2026-10-01): first release. Rotator Genius, SteppIR SDA100 and Antenna Genius
   (SO2R) control, plus N1MM rotor commands and frequency tracking. Formerly called "Beam Controller";
   settings are carried over automatically.
 
 ## Planned
 
-* Stream Deck control over the network.
+* Full AntennaDeck window in a web browser, for remote operating without remote desktop.

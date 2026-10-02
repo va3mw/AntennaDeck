@@ -137,7 +137,11 @@ func (l *link) run(ctx context.Context) {
 			}
 		}()
 
-		ticker := time.NewTicker(l.interval())
+		iv := l.interval()
+		if iv < 100*time.Millisecond {
+			iv = time.Second
+		}
+		ticker := time.NewTicker(iv)
 		reason := "connection closed"
 	loop:
 		for {
